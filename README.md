@@ -4,7 +4,7 @@ O Orquestra ajuda a equipe de TI a responder perguntas do dia a dia: com quem es
 
 ## Rodar na sua máquina
 
-Use Node.js 22 ou mais recente e a API ASP.NET Core do Orquestra na branch `feat/contas-e-recuperacao` ou na branch de integração que a contenha. Prepare o SQL Server e o administrador inicial conforme o README da API.
+Use Node.js 22 ou mais recente. Para rodar todas as funcionalidades desta versão, use a [branch de homologação da API](https://github.com/ViniciusCruzSP/Orquestra/tree/feat/homologacao). O README da API explica como preparar o SQL Server e cadastrar o administrador inicial.
 
 Para rodar a API localmente:
 
