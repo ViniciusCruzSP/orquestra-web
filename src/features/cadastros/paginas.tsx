@@ -48,7 +48,7 @@ export async function Catalogo({ categoria, busca }: { categoria: boolean; busca
 export async function Pessoas({ busca }: { busca: Busca }) {
   const { perfil } = await sessaoAtual()
   if (perfil === 'Colaborador') redirect('/meus-ativos')
-  const params = consulta(busca, ['busca', 'situacao', 'pagina'])
+  const params = consulta(busca, ['busca', 'situacao', 'departamentoId', 'pagina'])
   const [lista, departamentos] = await Promise.all([
     consultar<Paginado<Colaborador>>('colaboradores?' + params), listarTudo<Cadastro>('departamentos'),
   ])
@@ -59,6 +59,8 @@ export async function Pessoas({ busca }: { busca: Busca }) {
       <label>Buscar<input name="busca" defaultValue={valor(busca, 'busca')} placeholder="Nome ou e-mail" /></label>
       <label>Situação<select name="situacao" defaultValue={valor(busca, 'situacao')}><option value="">Todas</option>
         <option>Ativo</option><option value="EmDesligamento">Em desligamento</option><option>Inativo</option></select></label>
+      <label>Departamento<select name="departamentoId" defaultValue={valor(busca, 'departamentoId')}><option value="">Todos</option>
+        {departamentos.map(d => <option key={d.id} value={d.id}>{d.nome}</option>)}</select></label>
       <button className="botao">Filtrar</button><Link className="botao secundario" href="/colaboradores">Limpar</Link>
     </form>
       <Tabela colunas={['Nome', 'E-mail', 'Departamento', 'Cargo', 'Situação', 'Ações']}>{lista.itens.map(c =>

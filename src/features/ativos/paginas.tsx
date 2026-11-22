@@ -68,6 +68,8 @@ export async function EditarAtivo({ id }: { id?: string }) {
           {categorias.filter(c => c.ativa || c.id === ativo?.categoriaId).map(c => <option value={c.id} key={c.id}>{c.nome}</option>)}
         </select></label>
         <label>Número de série<input name="numeroDeSerie" maxLength={120} defaultValue={ativo?.numeroDeSerie ?? ''} /></label>
+        {!ativo && <label>Estado inicial<select name="situacaoInicial"><option value="Disponível">Em estoque</option>
+          <option value="EmManutenção">Em manutenção</option><option value="ComDefeito">Com defeito</option></select></label>}
         <Especificacoes dados={ativo?.especificacoes} />
         <label className="campo-largo">Observações<textarea name="observacoes" maxLength={2000} defaultValue={ativo?.observacoes ?? ''} /></label>
       </div>

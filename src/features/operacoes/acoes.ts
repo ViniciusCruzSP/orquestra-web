@@ -33,6 +33,7 @@ export async function executar(op: Operacao, _: Resultado, dados: FormData): Pro
           nome: campo('nome'), patrimonio: campo('patrimonio'), marca: campo('marca'), modelo: campo('modelo'),
           categoriaId: campo('categoriaId'), numeroDeSerie: opcional('numeroDeSerie'), observacoes: opcional('observacoes'),
           versaoDoRegistro: opcional('versaoDoRegistro'),
+          situacaoInicial: opcional('situacaoInicial'),
           especificacoes: {
             tipo: campo('tipo'), adquiridoEm: opcional('adquiridoEm'), processador: opcional('processador'),
             memoriaRam: opcional('memoriaRam'), armazenamento: opcional('armazenamento'),
