@@ -42,3 +42,22 @@ Abra `http://localhost:3000` e entre com a conta da API. Se a API estiver em out
 As páginas carregam os dados pelo servidor Next.js. Os formulários chamam ações do servidor, que usam o token em um cookie HttpOnly para autenticar na API. A API valida as permissões. Para alterar uma tela existente, comece pela pasta dela em `src/app` e siga o componente importado em `src/features`.
 
 Para validar o projeto, rode `npm run lint`, `npm run tipos` e `npm run build`.
+
+## Testes no navegador
+
+Com as dependências instaladas, rode:
+
+```powershell
+npx playwright install chromium
+npm run testar
+```
+
+Os testes em `testes/` sobem o Next e uma API simulada em portas locais dedicadas. Cobrem login inválido, acesso sem sessão, cadastro só com nome e e-mail, edição sem conta, criação de acesso, cadastro duplicado e falha ao consultar a conta. No Windows, defina `$env:ORQUESTRA_TESTES_NAVEGADOR = 'msedge'` se preferir usar o Edge instalado.
+
+## Roteiro manual
+
+1. Cadastre um colaborador só com nome e e-mail. Clique em **Editar**, confirme o aviso **Sem conta de acesso**, altere o nome e salve. Tente cadastrar outro com o mesmo e-mail. A tela deve informar a duplicidade.
+2. Na edição, crie uma conta com perfil **Colaborador**. Entre com ela em outra janela anônima. **Meus ativos** deve abrir mesmo antes da primeira entrega.
+3. Como administrador, entregue dois equipamentos à mesma pessoa e baixe o termo. Na conta de colaborador, confirme que os dois aparecem em **Meus ativos**.
+4. Inicie o desligamento. Devolva só um equipamento e confira que ainda existe uma pendência. Devolva o segundo e conclua o desligamento. Entre novamente com a conta do colaborador para verificar que o acesso foi encerrado.
+5. Abra a edição do mesmo ativo em duas abas. Salve em uma e tente salvar na outra. A segunda deve pedir que você recarregue os dados.

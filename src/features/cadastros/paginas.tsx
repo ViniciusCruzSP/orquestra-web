@@ -75,16 +75,22 @@ export async function Pessoas({ busca }: { busca: Busca }) {
 }
 
 async function contaAtual(id: string) {
-  try { return await consultar<{ email: string; perfil: string }>(`contas/${encodeURIComponent(id)}`) }
-  catch (e) { if (e instanceof ErroApi && e.status === 404) return null; throw e }
+  try {
+    const conta = await consultar<{ email: string; perfil: string } | undefined>(`contas/${encodeURIComponent(id)}`)
+    return { conta: conta ?? null, indisponivel: false }
+  } catch (erro) {
+    if (!(erro instanceof ErroApi)) throw erro
+    return { conta: null, indisponivel: erro.status !== 404 }
+  }
 }
 
 export async function EditarPessoa({ id }: { id?: string }) {
   if ((await sessaoAtual()).perfil !== 'Administrador') redirect('/colaboradores')
-  const [departamentos, pessoa, conta] = await Promise.all([
+  const [departamentos, pessoa, acesso] = await Promise.all([
     listarTudo<Cadastro>('departamentos'),
     id ? consultar<Colaborador>(`colaboradores/${encodeURIComponent(id)}`) : null, id ? contaAtual(id) : null,
   ])
+  const conta = acesso?.conta
   return <><Cabecalho titulo={pessoa ? 'Editar colaborador' : 'Cadastrar colaborador'} voltar="/colaboradores" />
     <section className="cartao"><Formulario acao={executar.bind(null, { tipo: 'salvar', recurso: 'colaboradores', id })}
       botao="Salvar colaborador"><div className="campos">
@@ -98,14 +104,18 @@ export async function EditarPessoa({ id }: { id?: string }) {
       <label>Telefone<input name="telefone" type="tel" defaultValue={pessoa?.telefone ?? ''} maxLength={20} /></label>
     </div></Formulario></section>
     {id && pessoa?.situacao === 'Ativo' && <section className="cartao"><h2>Conta de acesso</h2>
-      {conta && <p className="secundario">E-mail da conta: {conta.email}</p>}
-      <Formulario botao={conta ? 'Salvar perfil' : 'Criar conta'} acao={executar.bind(null, { tipo: 'conta', id })}>
-        <label>Perfil<select name="perfil" defaultValue={conta?.perfil ?? 'Colaborador'}>
-          <option>Colaborador</option><option value="GestorTI">Gestor de TI</option>
-          <option value="OperadorTI">Operador de TI</option><option>Auditor</option>
-        </select></label>
-        {!conta && <label>Senha inicial<input type="password" name="senhaInicial" minLength={12} maxLength={256} autoComplete="new-password" required /></label>}
-      </Formulario>
+      {acesso?.indisponivel ? <p className="erro" role="alert">
+        Não foi possível consultar a conta de acesso. Recarregue a página para tentar novamente.
+      </p> : <>
+        <p className="secundario">{conta ? `E-mail da conta: ${conta.email}` : 'Sem conta de acesso.'}</p>
+        <Formulario botao={conta ? 'Salvar perfil' : 'Criar conta'} acao={executar.bind(null, { tipo: 'conta', id })}>
+          <label>Perfil<select name="perfil" defaultValue={conta?.perfil ?? 'Colaborador'}>
+            <option>Colaborador</option><option value="GestorTI">Gestor de TI</option>
+            <option value="OperadorTI">Operador de TI</option><option>Auditor</option>
+          </select></label>
+          {!conta && <label>Senha inicial<input type="password" name="senhaInicial" minLength={12} maxLength={256} autoComplete="new-password" required /></label>}
+        </Formulario>
+      </>}
     </section>}
     {id && pessoa?.situacao === 'Ativo' && <div className="acoes"><Formulario simples perigo botao="Inativar colaborador"
       confirmar="Deseja inativar este colaborador?" acao={executar.bind(null, { tipo: 'inativar', recurso: 'colaboradores', id })} /></div>}
